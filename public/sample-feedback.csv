@@ -1,0 +1,15 @@
+feedback text,source,user type,product area,date,rating
+"The export button in the dashboard just spins forever and never downloads the CSV.",in-app survey,paid,dashboard,2026-05-02,2
+"I can't figure out how to export my report as a CSV, the button does nothing.",support ticket,paid,dashboard,2026-05-04,
+"Exporting a large dashboard view times out after about a minute.",support ticket,enterprise,dashboard,2026-05-06,1
+"Really love the new dark mode, easy on the eyes during late night work.",app store review,free,ui,2026-05-03,5
+"Dark mode looks great, but the sidebar icons are still light and hard to see.",in-app survey,paid,ui,2026-05-07,4
+"Login keeps failing with 'invalid session' after I leave the tab open overnight.",support ticket,paid,auth,2026-05-01,2
+"Getting logged out randomly in the middle of editing a document, lost my work.",support ticket,enterprise,auth,2026-05-05,1
+"Session expires way too fast even though I'm actively using the app.",in-app survey,free,auth,2026-05-08,2
+"Would be nice if search remembered my last filters.",in-app survey,free,search,2026-05-02,4
+"Onboarding checklist is confusing, not sure what step 3 wants me to do.",support ticket,free,onboarding,2026-05-09,3
+"Mobile app crashes every time I try to attach a photo to a comment.",app store review,paid,mobile,2026-05-10,1
+"Photo attachments fail silently on mobile, no error shown.",support ticket,paid,mobile,2026-05-11,2
+"The billing page shows the wrong currency for our account.",support ticket,enterprise,billing,2026-05-12,2
+"Everything has been smooth this month, no complaints.",in-app survey,paid,general,2026-05-13,5

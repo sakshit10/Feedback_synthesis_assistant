@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+  ::selection {
+    @apply bg-accentSoft;
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.accent');
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .ledger-num {
+    @apply font-mono tabular-nums;
+  }
+
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-[11px] font-medium uppercase tracking-wide;
+  }
+
+  .tag-ai {
+    @apply bg-accentSoft text-accent;
+  }
+
+  .tag-computed {
+    @apply bg-ink/5 text-slate font-mono normal-case tracking-normal;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-ink text-paper border-ink hover:bg-ink/85;
+  }
+
+  .btn-secondary {
+    @apply btn bg-transparent text-ink border-line hover:border-ink;
+  }
+
+  .btn-accent {
+    @apply btn bg-accent text-white border-accent hover:bg-accent/85;
+  }
+
+  .btn-danger {
+    @apply btn bg-transparent text-rust border-rust/40 hover:bg-rust/5;
+  }
+}
