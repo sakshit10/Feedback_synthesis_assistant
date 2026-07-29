@@ -1,32 +1,43 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from "openai";
 import type {
   FeedbackItem,
   HistoricalNote,
   AiSynthesisResponse,
   AiThemeProposal,
-} from './types';
+} from "./types";
 
 const MAX_ITEMS_PER_CALL = 400;
 
-function getClient(): Anthropic {
+function getClient(): OpenAI {
   console.log("=== ENV DEBUG ===");
-  console.log("ANTHROPIC_API_KEY exists:", !!process.env.ANTHROPIC_API_KEY);
-  console.log("ANTHROPIC_MODEL:", process.env.ANTHROPIC_MODEL);
+  console.log(
+    "OPENROUTER_API_KEY exists:",
+    !!process.env.OPENROUTER_API_KEY
+  );
+  console.log(
+    "OPENROUTER_MODEL:",
+    process.env.OPENROUTER_MODEL
+  );
   console.log(
     "Available env vars:",
-    Object.keys(process.env).filter((k) => k.includes("ANTHROPIC"))
+    Object.keys(process.env).filter((k) =>
+      k.includes("OPENROUTER")
+    )
   );
   console.log("=================");
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
     throw new Error(
-      "ANTHROPIC_API_KEY is not set on Railway."
+      "OPENROUTER_API_KEY is not set on Railway."
     );
   }
 
-  return new Anthropic({ apiKey });
+  return new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey,
+  });
 }
 
 function buildSystemPrompt(): string {
@@ -71,15 +82,13 @@ date:${f.feedback_date}`
       ? "(no historical notes)"
       : notes.map((n) => `- ${n.title}: ${n.content}`).join("\n");
 
-  return `
-Feedback:
+  return `Feedback:
 
 ${feedbackBlock}
 
 Historical Notes:
 
-${notesBlock}
-`;
+${notesBlock}`;
 }
 
 export interface SynthesisRunResult {
@@ -104,13 +113,17 @@ export async function runSynthesis(
   const client = getClient();
 
   const model =
-    process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
+    process.env.OPENROUTER_MODEL ||
+    "meta-llama/llama-3.3-70b-instruct";
 
-  const response = await client.messages.create({
+  const response = await client.chat.completions.create({
     model,
-    max_tokens: 8000,
-    system: buildSystemPrompt(),
+    temperature: 0.2,
     messages: [
+      {
+        role: "system",
+        content: buildSystemPrompt(),
+      },
       {
         role: "user",
         content: buildUserPrompt(usedItems, notes),
@@ -118,18 +131,15 @@ export async function runSynthesis(
     ],
   });
 
-  const textBlock = response.content.find((b) => b.type === "text");
   const rawModel =
-    textBlock && "text" in textBlock ? textBlock.text : "";
+    response.choices[0]?.message?.content || "";
 
   const parsed = parseModelJson(rawModel);
 
   const validIds = new Set(usedItems.map((i) => i.id));
 
-  const { cleanedThemes, droppedCitations } = validateCitations(
-    parsed.themes,
-    validIds
-  );
+  const { cleanedThemes, droppedCitations } =
+    validateCitations(parsed.themes, validIds);
 
   return {
     proposals: cleanedThemes.filter(
