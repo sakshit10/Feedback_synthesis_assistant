@@ -180,13 +180,32 @@ export function parseModelJson(raw: string): AiSynthesisResponse {
   if (text.startsWith('```')) {
     text = text.replace(/^```(json)?/, '').replace(/```$/, '').trim();
   }
+
   try {
-    const parsed = JSON.parse(text);
-    if (!Array.isArray(parsed.themes)) throw new Error('themes is not an array');
-    return parsed as AiSynthesisResponse;
-  } catch (err) {
+    return finishParsing(text);
+  } catch (firstErr) {
+    // Some free-tier models prepend/append stray text around the JSON object
+    // despite instructions (e.g. a "User Safety: safe" moderation-style
+    // preamble). As a second attempt, extract the outermost {...} span and
+    // retry before giving up -- this is purely a parsing fallback, it does
+    // not change what themes/citations get trusted downstream.
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start !== -1 && end !== -1 && end > start) {
+      try {
+        return finishParsing(text.slice(start, end + 1));
+      } catch {
+        // fall through to throw the original error below
+      }
+    }
     throw new Error(
-      `Model did not return valid JSON: ${(err as Error).message}. Raw output (truncated): ${text.slice(0, 500)}`
+      `Model did not return valid JSON: ${(firstErr as Error).message}. Raw output (truncated): ${text.slice(0, 500)}`
     );
   }
+}
+
+function finishParsing(text: string): AiSynthesisResponse {
+  const parsed = JSON.parse(text);
+  if (!Array.isArray(parsed.themes)) throw new Error('themes is not an array');
+  return parsed as AiSynthesisResponse;
 }
