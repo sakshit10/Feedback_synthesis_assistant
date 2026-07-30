@@ -37,23 +37,26 @@ export function UploadPanel({ onUploaded }: Props) {
 
       <div className="mt-4 flex items-center gap-3">
         <input
-          ref={inputRef}
-          type="file"
-          accept=".csv"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) handleFile(file);
-          }}
-        />
-        <button
-          type="button"
-          className="btn-primary"
-          disabled={status === 'uploading'}
-          onClick={() => inputRef.current?.click()}
-        >
-          {status === 'uploading' ? 'Uploading…' : 'Choose CSV file'}
-        </button>
+  id="csv-upload"
+  ref={inputRef}
+  type="file"
+  accept=".csv,text/csv,application/vnd.ms-excel"
+  className="hidden"
+  onChange={(e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFile(file);
+      e.target.value = "";
+    }
+  }}
+/>
+
+<label
+  htmlFor="csv-upload"
+  className="btn-primary cursor-pointer"
+>
+  {status === "uploading" ? "Uploading..." : "Choose CSV file"}
+</label>
         <a href="/sample-feedback.csv" download className="text-xs text-slate underline hover:text-ink">
           download a sample CSV
         </a>
