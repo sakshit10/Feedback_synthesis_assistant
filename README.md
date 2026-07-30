@@ -120,17 +120,17 @@ bug would be hardest to notice by eye:
 
 ## Known limitations
 
-- SQLite is file-based; on most serverless platforms (e.g. Vercel) the
-  filesystem is ephemeral, so **SQLite requires a host with a persistent
-  disk** (Render, Railway, Fly.io, a VPS, or Vercel + a mounted volume/external
-  DB). See Deployment below.
-- The `npm audit` output shows a few moderate/high advisories in transitive
-  build-time dependencies (Next's bundled PostCSS font-optimization step,
-  and `uuid`'s v3/v5/v6 namespace functions, which this project doesn't use —
-  only `uuid.v4()` is called). None are in the runtime request path. Worth
-  revisiting with `npm audit fix` before a long-lived production deployment.
-- No pagination on the themes or feedback list — fine at CSV-upload scale,
-  would need it for very large batches.
+- **Free-tier AI model variability.** `OPENROUTER_MODEL=openrouter/free`
+  randomly selects among several underlying free models per request, which
+  is deliberate (see AGENT_USAGE.md) so a single delisted model doesn't
+  break the app. This means: response time varies (roughly 10–90+ seconds
+  depending on which model is selected and current load), and the exact
+  theme titles/groupings can differ slightly between runs on identical
+  input, since different models phrase things differently. The *behavior
+  guarantees* (citations validated against real IDs, counts computed
+  deterministically, no invented statistics) hold regardless of which
+  underlying free model is selected — only the AI's qualitative judgment
+  varies, which is expected and by design.
 
 ## Deployment
 
